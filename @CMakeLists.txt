@@ -55,4 +55,13 @@ target_link_libraries(aincrad_tests PRIVATE
 
 # Enable testing
 enable_testing()
-add_test(NAME aincrad_tests COMMAND aincrad_tests) 
+add_test(NAME aincrad_tests COMMAND aincrad_tests)
+
+# Add aincrad-asset CLI tool
+add_executable(aincrad-asset tools/aincrad-asset/main.cpp)
+target_include_directories(aincrad-asset PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(aincrad-asset PRIVATE
+    aincrad_shared_assets
+) 
