@@ -1,0 +1,123 @@
+"appbuild"
+{
+    "appid" "1234567"
+    "desc" "Aincrad - SAO-inspired VR MMORPG"
+    "buildoutput" "C:\Builds\Steam"
+    "contentroot" "C:\Builds"
+    "setlive" "beta"
+    "preview" "0"
+    "local" ""
+
+    "depots"
+    {
+        "1234567" // Alpha Depot
+        {
+            "localpath" "C:\Builds\Alpha"
+            "contentroot" "C:\Builds\Alpha"
+            "filemapping"
+            {
+                "localpath" "*"
+                "remotepath" "."
+            }
+            "buildoutput" "C:\Builds\Steam\Alpha"
+        }
+
+        "1234568" // Beta Depot
+        {
+            "localpath" "C:\Builds\Beta"
+            "contentroot" "C:\Builds\Beta"
+            "filemapping"
+            {
+                "localpath" "*"
+                "remotepath" "."
+            }
+            "buildoutput" "C:\Builds\Steam\Beta"
+        }
+
+        "1234569" // Release Depot
+        {
+            "localpath" "C:\Builds\Release"
+            "contentroot" "C:\Builds\Release"
+            "filemapping"
+            {
+                "localpath" "*"
+                "remotepath" "."
+            }
+            "buildoutput" "C:\Builds\Steam\Release"
+        }
+
+        "1234570" // VR Depot
+        {
+            "localpath" "C:\Builds\VR"
+            "contentroot" "C:\Builds\VR"
+            "filemapping"
+            {
+                "localpath" "*"
+                "remotepath" "."
+            }
+            "buildoutput" "C:\Builds\Steam\VR"
+        }
+    }
+
+    "branches"
+    {
+        "alpha"
+        {
+            "buildid" "1234567"
+            "timeupdated" "1234567890"
+            "pwdrequired" "1"
+            "description" "Alpha version for testing"
+        }
+
+        "beta"
+        {
+            "buildid" "1234568"
+            "timeupdated" "1234567890"
+            "pwdrequired" "1"
+            "description" "Beta version for community testing"
+        }
+
+        "release"
+        {
+            "buildid" "1234569"
+            "timeupdated" "1234567890"
+            "pwdrequired" "0"
+            "description" "Release version"
+        }
+
+        "vr"
+        {
+            "buildid" "1234570"
+            "timeupdated" "1234567890"
+            "pwdrequired" "0"
+            "description" "VR-optimized version"
+        }
+    }
+
+    "launch"
+    {
+        "0"
+        {
+            "executable" "Aincrad.exe"
+            "arguments" ""
+            "description" "Launch Aincrad"
+            "type" "game"
+            "config"
+            {
+                "oslist" "windows"
+            }
+        }
+
+        "1"
+        {
+            "executable" "Aincrad_VR.exe"
+            "arguments" "-vr"
+            "description" "Launch Aincrad VR"
+            "type" "game"
+            "config"
+            {
+                "oslist" "windows"
+            }
+        }
+    }
+} 
