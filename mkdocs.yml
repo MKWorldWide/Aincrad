@@ -1,0 +1,32 @@
+site_name: SAO Framework Documentation
+site_description: Comprehensive documentation for the Sword Art Online Framework
+site_author: SAO Framework Team
+site_url: https://yourusername.github.io/sao-framework
+
+repo_name: yourusername/sao-framework
+repo_url: https://github.com/yourusername/sao-framework
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - API Reference: api/README.md
+  - Tutorials: tutorials/README.md
+  - Architecture: architecture/README.md
+  - Examples: ../examples/SAO_Basic_Example/main.cpp 
