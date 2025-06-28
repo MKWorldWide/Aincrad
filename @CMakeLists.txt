@@ -4,64 +4,309 @@ project(Aincrad VERSION 1.0.0 LANGUAGES CXX)
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Project options
+option(ENABLE_VR "Enable VR support" ON)
+option(ENABLE_VISION_PRO "Enable Vision Pro support" OFF)
+option(ENABLE_STEAM "Enable Steam integration" ON)
+option(ENABLE_TESTING "Enable testing" ON)
+option(ENABLE_PROFILING "Enable profiling support" OFF)
+option(BUILD_TOOLS "Build development tools" ON)
+option(BUILD_EXAMPLES "Build example applications" OFF)
+
+# Set output directories
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Compiler-specific settings
+if(MSVC)
+    add_compile_options(/W4 /utf-8)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        add_compile_options(-Wno-unused-parameter)
+    endif()
+endif()
 
 # Find required packages
 find_package(GTest REQUIRED)
 find_package(jsoncpp REQUIRED)
 
-# Add source files
-set(SOURCES
-    src/World/SharedAssets/AssetManager.cpp
-    src/World/SharedAssets/Asset.cpp
-    src/World/SharedAssets/AssetDatabase.cpp
-    src/World/SharedAssets/StreamingSystem.cpp
-    src/World/SharedAssets/MemoryManager.cpp
+# Optional packages
+find_package(OpenXR QUIET)
+find_package(SteamSDK QUIET)
+find_package(Vulkan QUIET)
+
+# Platform-specific settings
+if(WIN32)
+    set(PLATFORM_WINDOWS ON)
+    add_compile_definitions(PLATFORM_WINDOWS)
+    if(ENABLE_VR)
+        find_package(OculusSDK QUIET)
+    endif()
+elseif(APPLE)
+    set(PLATFORM_MACOS ON)
+    add_compile_definitions(PLATFORM_MACOS)
+    if(ENABLE_VISION_PRO)
+        add_compile_definitions(ENABLE_VISION_PRO)
+    endif()
+elseif(UNIX)
+    set(PLATFORM_LINUX ON)
+    add_compile_definitions(PLATFORM_LINUX)
+endif()
+
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/@src)
+include_directories(${CMAKE_SOURCE_DIR}/@src/World/SharedAssets)
+
+# Source files for core library
+set(CORE_SOURCES
+    @src/World/SharedAssets/AssetManager.cpp
+    @src/World/SharedAssets/Asset.cpp
+    @src/World/SharedAssets/AssetDatabase.cpp
+    @src/World/SharedAssets/StreamingSystem.cpp
+    @src/World/SharedAssets/MemoryManager.cpp
+    @src/World/ZoneSystem.cpp
+    @src/World/FloorOneZone.cpp
+    @src/World/DungeonTriggerZone.cpp
+    @src/World/FloorCodexComponent.cpp
+    @src/World/BossGateRitual.cpp
+    @src/Characters/PlayerCharacter.cpp
+    @src/Characters/BP_AincradPlayer.cpp
+    @src/Combat/WeaponComponent.cpp
+    @src/Skills/SkillSystemComponent.cpp
+    @src/AI/EnemyAI.cpp
+    @src/UI/HUDSystem.cpp
 )
 
-# Add header files
-set(HEADERS
-    src/World/SharedAssets/AssetManager.h
-    src/World/SharedAssets/Asset.h
-    src/World/SharedAssets/AssetDatabase.h
-    src/World/SharedAssets/StreamingSystem.h
-    src/World/SharedAssets/MemoryManager.h
+# Header files for core library
+set(CORE_HEADERS
+    @src/World/SharedAssets/AssetManager.h
+    @src/World/SharedAssets/Asset.h
+    @src/World/SharedAssets/AssetDatabase.h
+    @src/World/SharedAssets/StreamingSystem.h
+    @src/World/SharedAssets/MemoryManager.h
+    @src/World/ZoneSystem.h
+    @src/World/FloorOneZone.h
+    @src/World/DungeonTriggerZone.h
+    @src/World/FloorCodexComponent.h
+    @src/World/BossGateRitual.h
+    @src/Characters/PlayerCharacter.h
+    @src/Characters/BP_AincradPlayer.h
+    @src/Combat/WeaponComponent.h
+    @src/Skills/SkillSystemComponent.h
+    @src/AI/EnemyAI.h
+    @src/UI/HUDSystem.h
 )
 
-# Add test files
-set(TEST_SOURCES
-    tests/World/SharedAssets/AssetManagerTest.cpp
-)
+# VR-specific sources
+if(ENABLE_VR)
+    set(VR_SOURCES
+        @src/Content/VisionPro/VisionProIntegration.cpp
+        @src/Content/VisionPro/VisionProGestureHandler.cpp
+        @src/Content/VisionPro/VisionProVoiceHandler.cpp
+    )
+    set(VR_HEADERS
+        @src/Content/VisionPro/VisionProIntegration.h
+        @src/Content/VisionPro/VisionProGestureHandler.h
+        @src/Content/VisionPro/VisionProVoiceHandler.h
+    )
+    list(APPEND CORE_SOURCES ${VR_SOURCES})
+    list(APPEND CORE_HEADERS ${VR_HEADERS})
+endif()
 
 # Create main library
-add_library(aincrad_shared_assets STATIC ${SOURCES} ${HEADERS})
-target_include_directories(aincrad_shared_assets PUBLIC
-    ${CMAKE_SOURCE_DIR}/src
+add_library(aincrad_core STATIC ${CORE_SOURCES} ${CORE_HEADERS})
+
+# Set library properties
+set_target_properties(aincrad_core PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    PUBLIC_HEADER "${CORE_HEADERS}"
 )
-target_link_libraries(aincrad_shared_assets PUBLIC
+
+# Link libraries for core
+target_link_libraries(aincrad_core PUBLIC
     jsoncpp
 )
 
-# Create test executable
-add_executable(aincrad_tests ${TEST_SOURCES})
-target_include_directories(aincrad_tests PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${GTEST_INCLUDE_DIRS}
-)
-target_link_libraries(aincrad_tests PRIVATE
-    aincrad_shared_assets
-    ${GTEST_LIBRARIES}
-    pthread
+# Platform-specific linking
+if(PLATFORM_WINDOWS)
+    target_link_libraries(aincrad_core PRIVATE ws2_32)
+    if(ENABLE_VR AND OculusSDK_FOUND)
+        target_link_libraries(aincrad_core PRIVATE ${OculusSDK_LIBRARIES})
+        target_include_directories(aincrad_core PRIVATE ${OculusSDK_INCLUDE_DIRS})
+    endif()
+elseif(PLATFORM_MACOS)
+    find_library(COCOA_LIBRARY Cocoa)
+    find_library(IOKIT_LIBRARY IOKit)
+    target_link_libraries(aincrad_core PRIVATE ${COCOA_LIBRARY} ${IOKIT_LIBRARY})
+elseif(PLATFORM_LINUX)
+    target_link_libraries(aincrad_core PRIVATE pthread dl)
+    if(ENABLE_VR AND Vulkan_FOUND)
+        target_link_libraries(aincrad_core PRIVATE Vulkan::Vulkan)
+    endif()
+endif()
+
+# VR-specific linking
+if(ENABLE_VR)
+    if(OpenXR_FOUND)
+        target_link_libraries(aincrad_core PRIVATE OpenXR::openxr_loader)
+    endif()
+endif()
+
+# Steam integration
+if(ENABLE_STEAM AND SteamSDK_FOUND)
+    target_link_libraries(aincrad_core PRIVATE ${SteamSDK_LIBRARIES})
+    target_include_directories(aincrad_core PRIVATE ${SteamSDK_INCLUDE_DIRS})
+    add_compile_definitions(ENABLE_STEAM_INTEGRATION)
+endif()
+
+# Testing
+if(ENABLE_TESTING)
+    # Test sources
+    set(TEST_SOURCES
+        @tests/World/SharedAssets/AssetManagerTest.cpp
+    )
+    
+    # Create test executable
+    add_executable(aincrad_tests ${TEST_SOURCES})
+    target_include_directories(aincrad_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/@src
+        ${GTEST_INCLUDE_DIRS}
+    )
+    target_link_libraries(aincrad_tests PRIVATE
+        aincrad_core
+        ${GTEST_LIBRARIES}
+        pthread
+    )
+    
+    # Enable testing
+    enable_testing()
+    add_test(NAME aincrad_tests COMMAND aincrad_tests)
+    
+    # Performance tests
+    if(ENABLE_PROFILING)
+        add_executable(aincrad_performance_tests @tests/PerformanceTests.cpp)
+        target_link_libraries(aincrad_performance_tests PRIVATE aincrad_core)
+        add_test(NAME aincrad_performance_tests COMMAND aincrad_performance_tests)
+    endif()
+    
+    # VR tests
+    if(ENABLE_VR)
+        add_executable(aincrad_vr_tests @tests/VRTests.cpp)
+        target_link_libraries(aincrad_vr_tests PRIVATE aincrad_core)
+        add_test(NAME aincrad_vr_tests COMMAND aincrad_vr_tests)
+    endif()
+endif()
+
+# Development tools
+if(BUILD_TOOLS)
+    # Asset CLI tool
+    add_executable(aincrad-asset @tools/aincrad-asset/main.cpp)
+    target_include_directories(aincrad-asset PRIVATE
+        ${CMAKE_SOURCE_DIR}/@src
+    )
+    target_link_libraries(aincrad-asset PRIVATE
+        aincrad_core
+    )
+    
+    # Asset import/export tools
+    add_executable(aincrad-import-model @tools/aincrad-asset/import_model.cpp)
+    add_executable(aincrad-export-model @tools/aincrad-asset/export_model.cpp)
+    add_executable(aincrad-import-texture @tools/aincrad-asset/import_texture.cpp)
+    add_executable(aincrad-export-texture @tools/aincrad-asset/export_texture.cpp)
+    add_executable(aincrad-import-audio @tools/aincrad-asset/import_audio.cpp)
+    add_executable(aincrad-export-audio @tools/aincrad-asset/export_audio.cpp)
+    
+    # Link tools to core library
+    foreach(tool aincrad-import-model aincrad-export-model aincrad-import-texture aincrad-export-texture aincrad-import-audio aincrad-export-audio)
+        target_include_directories(${tool} PRIVATE ${CMAKE_SOURCE_DIR}/@src)
+        target_link_libraries(${tool} PRIVATE aincrad_core)
+    endforeach()
+endif()
+
+# Examples
+if(BUILD_EXAMPLES)
+    add_subdirectory(@examples)
+endif()
+
+# Installation
+install(TARGETS aincrad_core
+    EXPORT aincradTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/aincrad
 )
 
-# Enable testing
-enable_testing()
-add_test(NAME aincrad_tests COMMAND aincrad_tests)
-
-# Add aincrad-asset CLI tool
-add_executable(aincrad-asset tools/aincrad-asset/main.cpp)
-target_include_directories(aincrad-asset PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
+# Install headers
+install(DIRECTORY @src/
+    DESTINATION include/aincrad
+    FILES_MATCHING PATTERN "*.h"
 )
-target_link_libraries(aincrad-asset PRIVATE
-    aincrad_shared_assets
-) 
+
+# Install tools
+if(BUILD_TOOLS)
+    install(TARGETS aincrad-asset aincrad-import-model aincrad-export-model aincrad-import-texture aincrad-export-texture aincrad-import-audio aincrad-export-audio
+        RUNTIME DESTINATION bin
+    )
+endif()
+
+# Install documentation
+install(FILES README.md CONTRIBUTING.md LICENSE
+    DESTINATION share/doc/aincrad
+)
+
+install(DIRECTORY @docs/
+    DESTINATION share/doc/aincrad/docs
+)
+
+# Export targets
+install(EXPORT aincradTargets
+    FILE aincradTargets.cmake
+    NAMESPACE aincrad::
+    DESTINATION lib/cmake/aincrad
+)
+
+# Create config file
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    aincradConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/aincradConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/aincradConfig.cmake
+    INSTALL_DESTINATION lib/cmake/aincrad
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/aincradConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/aincradConfigVersion.cmake
+    DESTINATION lib/cmake/aincrad
+)
+
+# Print configuration summary
+message(STATUS "Aincrad Configuration Summary:")
+message(STATUS "  Version: ${PROJECT_VERSION}")
+message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "  VR Support: ${ENABLE_VR}")
+message(STATUS "  Vision Pro Support: ${ENABLE_VISION_PRO}")
+message(STATUS "  Steam Integration: ${ENABLE_STEAM}")
+message(STATUS "  Testing: ${ENABLE_TESTING}")
+message(STATUS "  Profiling: ${ENABLE_PROFILING}")
+message(STATUS "  Build Tools: ${BUILD_TOOLS}")
+message(STATUS "  Build Examples: ${BUILD_EXAMPLES}")
+message(STATUS "  Platform: ${CMAKE_SYSTEM_NAME}")
+if(ENABLE_VR)
+    message(STATUS "  OpenXR: ${OpenXR_FOUND}")
+endif()
+if(ENABLE_STEAM)
+    message(STATUS "  Steam SDK: ${SteamSDK_FOUND}")
+endif() 

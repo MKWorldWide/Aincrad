@@ -1,0 +1,67 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Find required dependencies
+find_dependency(jsoncpp REQUIRED)
+find_dependency(GTest REQUIRED)
+
+# Optional dependencies
+find_dependency(OpenXR QUIET)
+find_dependency(Vulkan QUIET)
+
+# Include the targets file
+include("${CMAKE_CURRENT_LIST_DIR}/aincradTargets.cmake")
+
+# Set variables for compatibility
+set(AINCRAD_FOUND TRUE)
+set(AINCRAD_VERSION @PROJECT_VERSION@)
+
+# Check for optional features
+if(OpenXR_FOUND)
+    set(AINCRAD_VR_SUPPORT TRUE)
+else()
+    set(AINCRAD_VR_SUPPORT FALSE)
+endif()
+
+if(Vulkan_FOUND)
+    set(AINCRAD_VULKAN_SUPPORT TRUE)
+else()
+    set(AINCRAD_VULKAN_SUPPORT FALSE)
+endif()
+
+# Platform detection
+if(WIN32)
+    set(AINCRAD_PLATFORM "Windows")
+elseif(APPLE)
+    set(AINCRAD_PLATFORM "macOS")
+elseif(UNIX)
+    set(AINCRAD_PLATFORM "Linux")
+else()
+    set(AINCRAD_PLATFORM "Unknown")
+endif()
+
+# Print configuration information
+message(STATUS "Aincrad ${AINCRAD_VERSION} configuration loaded")
+message(STATUS "  Platform: ${AINCRAD_PLATFORM}")
+message(STATUS "  VR Support: ${AINCRAD_VR_SUPPORT}")
+message(STATUS "  Vulkan Support: ${AINCRAD_VULKAN_SUPPORT}")
+
+# Provide usage example
+if(NOT TARGET aincrad::core)
+    message(FATAL_ERROR "Aincrad core target not found. Please check your installation.")
+endif()
+
+# Set up include directories
+target_include_directories(aincrad::core INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/@src>
+    $<INSTALL_INTERFACE:include/aincrad>
+)
+
+# Set compile definitions
+target_compile_definitions(aincrad::core INTERFACE
+    $<$<BOOL:${AINCRAD_VR_SUPPORT}>:AINCRAD_VR_SUPPORT>
+    $<$<BOOL:${AINCRAD_VULKAN_SUPPORT}>:AINCRAD_VULKAN_SUPPORT>
+    AINCRAD_VERSION="${AINCRAD_VERSION}"
+    AINCRAD_PLATFORM="${AINCRAD_PLATFORM}"
+) 

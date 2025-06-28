@@ -1,0 +1,244 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        compiler: [gcc, clang, msvc]
+        exclude:
+          # Exclude incompatible combinations
+          - os: windows-latest
+            compiler: gcc
+          - os: windows-latest
+            compiler: clang
+          - os: macos-latest
+            compiler: msvc
+          - os: macos-latest
+            compiler: gcc
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgtest-dev libjsoncpp-dev
+        sudo apt-get install -y clang-tidy clang-format
+
+    - name: Install dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew install cmake gtest jsoncpp
+        brew install llvm
+
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # Windows dependencies are handled by vcpkg or installed separately
+        echo "Dependencies will be installed via vcpkg"
+
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v1.14
+      with:
+        cmake-version: '3.24.0'
+
+    - name: Configure CMake
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest --output-on-failure --verbose
+
+    - name: Run asset CLI tests
+      run: |
+        cd build
+        ./bin/aincrad-asset --help
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy clang-format cppcheck
+
+    - name: Run clang-format check
+      run: |
+        find . -name '*.cpp' -o -name '*.h' | grep -v build | xargs clang-format --dry-run --Werror
+
+    - name: Run clang-tidy
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build
+        python3 /usr/share/clang/run-clang-tidy.py -p build
+
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --std=c++17 --suppress=missingIncludeSystem src/
+
+  documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check documentation links
+      run: |
+        # Check for broken links in markdown files
+        find . -name "*.md" -exec grep -l "http" {} \; | xargs -I {} sh -c 'echo "Checking {}"; grep -o "http[^)]*" {} | xargs -I URL sh -c "curl -s -o /dev/null -w \"%{http_code}\" URL | grep -q \"^[23]\" || echo \"Broken link: URL\""'
+
+    - name: Validate README structure
+      run: |
+        # Check if README has required sections
+        grep -q "## Features" README.md || exit 1
+        grep -q "## Quick Start" README.md || exit 1
+        grep -q "## Contributing" README.md || exit 1
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run security scan
+      uses: github/codeql-action/init@v2
+      with:
+        languages: cpp
+
+    - name: Build for security analysis
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  vr-testing:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install VR testing dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgtest-dev libjsoncpp-dev
+
+    - name: Build VR components
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_VR=ON
+        cmake --build build
+
+    - name: Run VR-specific tests
+      run: |
+        cd build
+        # Run VR component tests if available
+        if [ -f "./bin/aincrad_vr_tests" ]; then
+          ./bin/aincrad_vr_tests
+        fi
+
+  performance:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install performance testing tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgtest-dev libjsoncpp-dev valgrind
+
+    - name: Build with performance profiling
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_PROFILING=ON
+        cmake --build build
+
+    - name: Run performance benchmarks
+      run: |
+        cd build
+        # Run performance tests if available
+        if [ -f "./bin/aincrad_performance_tests" ]; then
+          ./bin/aincrad_performance_tests
+        fi
+
+    - name: Memory leak check
+      run: |
+        cd build
+        valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./bin/aincrad_tests
+        cat valgrind-out.txt
+
+  artifact-upload:
+    needs: [build-and-test, code-quality, documentation, security]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build release artifacts
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+
+    - name: Create release package
+      run: |
+        mkdir -p release
+        cp -r build/bin/* release/
+        cp -r @docs/ release/docs/
+        cp README.md CONTRIBUTING.md LICENSE release/
+        tar -czf aincrad-release.tar.gz release/
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: aincrad-release
+        path: aincrad-release.tar.gz
+        retention-days: 30
+
+  notify:
+    needs: [build-and-test, code-quality, documentation, security]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "CI pipeline failed! Check the logs for details."
+        # Add notification logic here (Discord webhook, email, etc.)
+
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "CI pipeline completed successfully!"
+        # Add success notification logic here 

@@ -1,0 +1,133 @@
+# Build directories
+build/
+out/
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.orig
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Unreal Engine specific
+*.uasset
+*.umap
+*.ubulk
+*.uexp
+*.uasset.meta
+*.umap.meta
+*.ubulk.meta
+*.uexp.meta
+Saved/
+Intermediate/
+DerivedDataCache/
+.vscode/
+.vs/
+
+# Asset files (if not using version control)
+*.fbx
+*.obj
+*.png
+*.jpg
+*.jpeg
+*.tga
+*.bmp
+*.wav
+*.mp3
+*.ogg
+*.flac
+
+# Documentation build
+docs/_build/
+docs/html/
+docs/latex/
+
+# Test coverage
+*.gcov
+*.gcda
+*.gcno
+coverage/
+
+# Package files
+*.zip
+*.tar.gz
+*.rar
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+vendor/
+third_party/
+
+# Steam SDK
+steam_appid.txt
+steam_api.dll
+steam_api64.dll
+libsteam_api.dylib
+libsteam_api.so
+
+# VR SDK files
+Oculus/
+SteamVR/
+OpenXR/ 
