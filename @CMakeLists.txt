@@ -1,0 +1,67 @@
+cmake_minimum_required(VERSION 3.14)
+project(Aincrad VERSION 1.0.0 LANGUAGES CXX)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Find required packages
+find_package(GTest REQUIRED)
+find_package(jsoncpp REQUIRED)
+
+# Add source files
+set(SOURCES
+    src/World/SharedAssets/AssetManager.cpp
+    src/World/SharedAssets/Asset.cpp
+    src/World/SharedAssets/AssetDatabase.cpp
+    src/World/SharedAssets/StreamingSystem.cpp
+    src/World/SharedAssets/MemoryManager.cpp
+)
+
+# Add header files
+set(HEADERS
+    src/World/SharedAssets/AssetManager.h
+    src/World/SharedAssets/Asset.h
+    src/World/SharedAssets/AssetDatabase.h
+    src/World/SharedAssets/StreamingSystem.h
+    src/World/SharedAssets/MemoryManager.h
+)
+
+# Add test files
+set(TEST_SOURCES
+    tests/World/SharedAssets/AssetManagerTest.cpp
+)
+
+# Create main library
+add_library(aincrad_shared_assets STATIC ${SOURCES} ${HEADERS})
+target_include_directories(aincrad_shared_assets PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(aincrad_shared_assets PUBLIC
+    jsoncpp
+)
+
+# Create test executable
+add_executable(aincrad_tests ${TEST_SOURCES})
+target_include_directories(aincrad_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${GTEST_INCLUDE_DIRS}
+)
+target_link_libraries(aincrad_tests PRIVATE
+    aincrad_shared_assets
+    ${GTEST_LIBRARIES}
+    pthread
+)
+
+# Enable testing
+enable_testing()
+add_test(NAME aincrad_tests COMMAND aincrad_tests)
+
+# Add aincrad-asset CLI tool
+add_executable(aincrad-asset tools/aincrad-asset/main.cpp)
+target_include_directories(aincrad-asset PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(aincrad-asset PRIVATE
+    aincrad_shared_assets
+) 
