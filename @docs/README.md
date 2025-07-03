@@ -29,3 +29,12 @@
 
 ## Changelog
 - Initial scaffold 
+
+## Central Hub: Eden One City
+Eden One City is the immersive, modular central hub of AINCRAD, inspired by Disney/Universal theming and advanced worldbuilding. It features water, glass, floating gardens, and starlit vistas, serving as the launchpad to all other ages and worlds.
+
+- For a quantum-detailed narrative and design, see [World/Hub_System.md](./World/Hub_System.md).
+- For code structure, see `World/CityZone.h` and `World/CityZoneRegistry.h`.
+- For the full Eden One City project, visit the [Eden One City GitHub repository](https://github.com/eden-one-city/eden-one-city).
+
+--- 

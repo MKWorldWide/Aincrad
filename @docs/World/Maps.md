@@ -106,4 +106,11 @@
 - **AR Features**:
   - Real-world object recognition
   - Environmental mapping
-  - Location services 
+  - Location services
+
+## Eden One City: Modular City Layout
+Eden One City is the central hub of AINCRAD, featuring a modular zone/node system for all major districts and connectors. For a full narrative and experiential breakdown, see [Hub_System.md](./Hub_System.md).
+
+- Modular code: `World/CityZone.h`, `World/CityZoneRegistry.h`
+- Example zones: `World/UnitySpireZone.h`, `World/StarlakeZone.h`
+- Each zone is a plug-and-play module, supporting extensibility and immersive design. 
