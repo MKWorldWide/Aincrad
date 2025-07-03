@@ -236,3 +236,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Ready to dive into the virtual world?** Start your journey with Aincrad today! 🗡️✨
 
 *"The only way to beat the game is to clear all 100 floors..."*
+
+## Central Hub: Eden One City
+Eden One City is the heart of AINCRAD—a modular, immersive city hub inspired by Disney/Universal design, with water, glass, floating gardens, and starlit vistas. It is the launchpad to all other ages and worlds.
+
+- See [@docs/World/Hub_System.md](./@docs/World/Hub_System.md) for a quantum-detailed narrative and design.
+- For modular code, see `World/CityZone.h` and `World/CityZoneRegistry.h`.
+- Explore the Eden One City project at [Eden One City GitHub](https://github.com/eden-one-city/eden-one-city).
+
+---

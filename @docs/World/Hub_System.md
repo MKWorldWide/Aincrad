@@ -244,4 +244,64 @@ struct WorldInstance {
 - Asset streaming
 - Platform-specific patches
 - Version control
-- Rollback support 
+- Rollback support
+
+---
+
+# Eden One City: Quantum-Detailed Narrative & Experiential Design
+
+## Overview
+Eden One City is the central hub of AINCRAD, designed as an immersive, modular city inspired by Disney/Universal theming, with water, glass, floating gardens, and starlit vistas. Each district is a story world, blending narrative, technology, and nature. This section details the narrative, experiential goals, and modular code structure for each major zone.
+
+## Zone Narratives & Experiential Goals
+
+### 1. Unity Spire (Central Hub)
+- **Narrative:** The crystalline heart of Eden One City, housing the AI core, observation decks, and main portal. Beacon of hope, knowledge, and unity.
+- **Experiential:** Verticality, transparency, AI host, panoramic starlit views, portal room.
+
+### 2. Starlake (Surrounds Unity Spire)
+- **Narrative:** Circular lake with floating gardens and bioluminescent flora, symbolizing connection to nature and cosmos.
+- **Experiential:** Water taxis, floating walkways, glowing plants, social events.
+
+### 3. Cultural Crescent
+- **Narrative:** Celebration of Earth's diversity with museums, amphitheaters, and floating pavilions.
+- **Experiential:** Rotating exhibitions, live performances, water taxis, AR overlays.
+
+### 4. Emotional Biome Gardens
+- **Narrative:** Floating gardens that respond to visitor emotions, blending nature, art, and technology.
+- **Experiential:** Mycelium bridges, meditation domes, interactive art, AI gardeners.
+
+### 5. Love Creature Haven
+- **Narrative:** Sanctuaries for bioengineered animals and fantastical creatures.
+- **Experiential:** Glass tunnels, creature bonding, petting lagoons, AR overlays.
+
+### 6. Memory Coastline
+- **Narrative:** Tranquil coastal zone for reflection, healing, and memory exploration.
+- **Experiential:** Sensory pools, memory beaches, AR/VR experiences, memory lanterns.
+
+### 7. Zero-G Dome
+- **Narrative:** Weightless play zone and sky lounge for stargazing and floating gardens.
+- **Experiential:** Zero-g sports, glass floors/ceilings, dynamic music/light shows.
+
+### 8. Stargate Plaza
+- **Narrative:** Interstellar travel hub with portal activation rings and resonance arenas.
+- **Experiential:** Water mirrors, portal puzzles, AI gatekeepers, lore events.
+
+### 9. Interstitial Spaces
+- **Narrative:** Canals, skybridges, and hidden groves connect all districts.
+- **Experiential:** Panoramic movement, quiet groves, bioluminescent pathways.
+
+## Modular Code Structure
+- See `World/CityZone.h` for the modular base class for all city hub zones.
+- See `World/CityZoneRegistry.h` for the registry/manager pattern.
+- Example zones: `World/UnitySpireZone.h`, `World/StarlakeZone.h`.
+
+## Usage Example
+- Each zone is a subclass of `ACityZone` and registered with `UCityZoneRegistry`.
+- Zones can be extended, connected, and iterated for gameplay, AI, and visualization.
+
+## System Context
+- Eden One City is the launchpad for all ages/worlds in AINCRAD.
+- Designed for extensibility, narrative immersion, and seamless player experience.
+
+--- 
