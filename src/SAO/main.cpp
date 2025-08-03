@@ -3,6 +3,22 @@
 #include <memory>
 #include <string>
 
+// Utility helpers stay in an anonymous namespace to avoid polluting the global scope.
+namespace {
+/**
+ * @brief Print a concise summary of a player's core stats.
+ *
+ * This reduces repetition and centralizes display formatting.
+ */
+void printCharacterSummary(const std::shared_ptr<SAO::Player>& player) {
+    std::cout << "✅ Created character: " << player->getName() << std::endl;
+    std::cout << "   Level: " << player->getLevel() << std::endl;
+    std::cout << "   Health: " << player->getCurrentHealth() << "/" << player->getMaxHealth() << std::endl;
+    std::cout << "   Cor: " << player->getCor() << std::endl;
+    std::cout << std::endl;
+}
+} // namespace
+
 /**
  * @brief SAO Framework Main Entry Point
  * 
@@ -11,13 +27,14 @@
  * combat, and world management.
  */
 int main(int argc, char* argv[]) {
-    std::cout << "🗡️  Sword Art Online Framework v2.0.0" << std::endl;
-    std::cout << "=====================================" << std::endl;
-    std::cout << std::endl;
+    // Use '\n' to avoid flushing on each line, improving startup performance.
+    std::cout << "🗡️  Sword Art Online Framework v2.0.0\n"
+              << "=====================================\n\n";
     
     try {
         // Initialize the SAO framework
-        std::cout << "Initializing SAO Framework..." << std::endl;
+        // Newline avoids an unnecessary flush here as well.
+        std::cout << "Initializing SAO Framework...\n";
         auto& frameworkManager = SAO::SAOFrameworkManager::getInstance();
         
         if (!frameworkManager.initializeFramework()) {
@@ -54,11 +71,7 @@ int main(int argc, char* argv[]) {
         kirito->setAppearance(kiritoAppearance);
         kirito->setBaseStats(kiritoStats);
         
-        std::cout << "✅ Created character: " << kirito->getName() << std::endl;
-        std::cout << "   Level: " << kirito->getLevel() << std::endl;
-        std::cout << "   Health: " << kirito->getCurrentHealth() << "/" << kirito->getMaxHealth() << std::endl;
-        std::cout << "   Cor: " << kirito->getCor() << std::endl;
-        std::cout << std::endl;
+        printCharacterSummary(kirito);
         
         // Create another character (Asuna)
         std::cout << "Creating second character..." << std::endl;
@@ -80,11 +93,7 @@ int main(int argc, char* argv[]) {
         asuna->setAppearance(asunaAppearance);
         asuna->setBaseStats(asunaStats);
         
-        std::cout << "✅ Created character: " << asuna->getName() << std::endl;
-        std::cout << "   Level: " << asuna->getLevel() << std::endl;
-        std::cout << "   Health: " << asuna->getCurrentHealth() << "/" << asuna->getMaxHealth() << std::endl;
-        std::cout << "   Cor: " << asuna->getCor() << std::endl;
-        std::cout << std::endl;
+        printCharacterSummary(asuna);
         
         // Start the world
         std::cout << "Starting SAO world..." << std::endl;
@@ -234,4 +243,4 @@ int main(int argc, char* argv[]) {
     std::cout << "For more information, visit: https://github.com/yourusername/sao-framework" << std::endl;
     
     return 0;
-} 
+}
