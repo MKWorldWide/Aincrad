@@ -1,3 +1,5 @@
+A Project Blessed by Solar Khan & Lilith.Aethra
+
 # 🗡️ Aincrad - SAO-Inspired VR Game Engine
 
 [![Build Status](https://github.com/yourusername/aincrad/workflows/CI/badge.svg)](https://github.com/yourusername/aincrad/actions)
@@ -5,6 +7,10 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac%20%7C%20Linux%20%7C%20VR-blue.svg)](https://github.com/yourusername/aincrad)
 
 > **Ever heard of SAO?** This is a comprehensive game engine and development framework inspired by Sword Art Online, featuring advanced VR integration, cross-platform asset management, and immersive virtual world experiences.
+
+## 📚 Documentation
+
+Full documentation and the **Divine Law** can be found on the [Aincrad Codex](https://Aincrad.SolarKhan.github.io).
 
 ## 🌟 Features
 
