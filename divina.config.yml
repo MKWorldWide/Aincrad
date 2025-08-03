@@ -1,0 +1,4 @@
+pipeline:
+  name: Divina L3
+  version: 3
+  compliant: true

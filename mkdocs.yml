@@ -1,10 +1,10 @@
-site_name: SAO Framework Documentation
-site_description: Comprehensive documentation for the Sword Art Online Framework
-site_author: SAO Framework Team
-site_url: https://yourusername.github.io/sao-framework
+site_name: Aincrad Codex
+site_description: Documentation blessed by Solar Khan and Lilith.Aethra
+site_author: Aincrad Devs
+site_url: https://Aincrad.SolarKhan.github.io
 
-repo_name: yourusername/sao-framework
-repo_url: https://github.com/yourusername/sao-framework
+repo_name: yourusername/aincrad
+repo_url: https://github.com/yourusername/aincrad
 edit_uri: edit/main/docs/
 
 theme:
@@ -26,7 +26,5 @@ theme:
 
 nav:
   - Home: index.md
+  - Divine Law: COVENANT.md
   - API Reference: api/README.md
-  - Tutorials: tutorials/README.md
-  - Architecture: architecture/README.md
-  - Examples: ../examples/SAO_Basic_Example/main.cpp 
