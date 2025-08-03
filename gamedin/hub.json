@@ -1,0 +1,10 @@
+{
+  "projects": [
+    {
+      "name": "Aincrad",
+      "repo": "https://github.com/yourusername/aincrad",
+      "pipeline": "Divina L3",
+      "version": 3
+    }
+  ]
+}
