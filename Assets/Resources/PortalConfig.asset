@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: [SCRIPT_GUID], type: 3}
+  m_Name: PortalConfig
+  m_EditorClassIdentifier: 
+  maxActivePortals: 3
+  defaultInteractionDistance: 3.0
+  defaultAutoCloseDelay: 60.0
+  defaultRenderTextureSize: 1024
+  defaultVideoQuality: 1
+  enablePerformanceMode: 0
+  performanceModeSettings:
+    maxActivePortals: 1
+    renderTextureSize: 512
+    videoQuality: 0
+  debugMode: 0
