@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: [SCRIPT_GUID], type: 3}
+  m_Name: VRWorldConfig
+  m_EditorClassIdentifier: 
+  worldName: "Glasswater Hub"
+  author: "Your Name"
+  description: "A beautiful hub world connecting various experiences"
+  version: "1.0.0"
+  capacity: 16
+  recommendedCapacity: 8
+  contentRating: "Everyone"
+  tags:
+  - hub
+  - social
+  - exploration
+  - vrchat
+  questSettings:
+    enabled: 1
+    minSdkVersion: 24
+    targetSdkVersion: 31
+    textureCompression: 1  # ASTC
+    maxTextureSize: 2048
+    maxPolyCount: 100000
+    maxDrawCalls: 100
+  pcSettings:
+    enableAdvancedRendering: 1
+    enablePostProcessing: 1
+    shadowQuality: 2  # High
+    reflectionProbes: 1  # Enabled
+    maxTextureSize: 4096
+    maxPolyCount: 500000
+    maxDrawCalls: 500
+  spawnPoints:
+  - position: {x: 0, y: 1.6, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 1}
+  - position: {x: 2, y: 1.6, z: 0}
+    rotation: {x: 0, y: 180, z: 0, w: 1}
