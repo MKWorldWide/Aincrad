@@ -1,0 +1,25 @@
+{
+  "name": "serafina",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/router.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node scripts/start.js",
+    "dev": "ts-node src/router.ts",
+    "deploy-commands": "ts-node src/deploy-commands.ts",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/node-cron": "^3.0.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
