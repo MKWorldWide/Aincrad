@@ -1,0 +1,70 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 0 * * 0' # Weekly scan
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security-scan:
+    name: Run Security Scans
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: cpp, python, javascript
+        queries: security-extended,security-and-quality
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:cpp"
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Check for vulnerable dependencies
+      uses: actions/dependency-review-action@v3
+      with:
+        fail-on-severity: high
+
+    - name: Check for secrets in code
+      uses: gitleaks/gitleaks-action@v2
+      with:
+        config-path: .github/gitleaks.toml
+
+    - name: Check for vulnerable Python dependencies
+      uses: pyupio/safety@master
+      with:
+        api-key: ${{ secrets.SAFETY_API_KEY }}
+        check: true
+        output: 'safety-report.json'
+
+    - name: Upload safety results
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'safety-report.json'

@@ -12,6 +12,8 @@ Thank you for your interest in contributing to Aincrad! This document provides g
 - [Pull Request Process](#pull-request-process)
 - [Issue Reporting](#issue-reporting)
 - [Documentation](#documentation)
+- [Commit Guidelines](#commit-guidelines)
+- [Release Process](#release-process)
 
 ## 📜 Code of Conduct
 
@@ -23,24 +25,26 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 Before contributing, ensure you have:
 
-- **CMake** 3.14 or higher
-- **C++17** compatible compiler
+- **CMake** 3.20 or higher
+- **C++20** compatible compiler (GCC 11+, Clang 12+, MSVC 2022+)
 - **Git** for version control
-- **Google Test** for testing
-- **JsonCpp** for configuration
-- **Unreal Engine 5** (for full game development)
+- **Python 3.8+** for build scripts
+- **Vulkan SDK** (for rendering)
+- **SteamVR** (for VR development)
+- **Doxygen** (for documentation generation)
 
 ### Fork and Clone
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/yourusername/aincrad.git
-   cd aincrad
+   gh repo clone MKWorldWide/Aincrad
+   cd Aincrad
    ```
 3. Add the upstream repository:
    ```bash
-   git remote add upstream https://github.com/original-owner/aincrad.git
+   git remote add upstream https://github.com/MKWorldWide/Aincrad.git
+   git fetch upstream
    ```
 
 ## 🛠️ Development Setup
@@ -48,6 +52,137 @@ Before contributing, ensure you have:
 ### Building the Project
 
 ```bash
+# Configure with CMake
+cmake -B build -DCMAKE_BUILD_TYPE=Debug
+
+# Build the project
+cmake --build build --config Debug --parallel
+
+# Run tests
+cd build && ctest --output-on-failure
+```
+
+### Development Workflow
+
+1. Create a new branch for your feature/fix:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+2. Make your changes following the coding standards
+3. Run tests locally before committing
+4. Commit your changes with a descriptive message (see [Commit Guidelines](#commit-guidelines))
+5. Push to your fork and create a pull request
+
+## 📝 Coding Standards
+
+### C++ Style Guide
+
+We follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) with the following exceptions:
+
+- Use `#pragma once` instead of include guards
+- 4 spaces for indentation
+- 120 character line length
+
+### Code Formatting
+
+We use `clang-format` for code formatting. Before committing, run:
+
+```bash
+# Format all source files
+find src/ include/ -name '*.h' -o -name '*.cpp' | xargs clang-format -i
+```
+
+## 🧪 Testing Guidelines
+
+### Writing Tests
+
+- Place tests in the `tests/` directory
+- Test files should be named `test_*.cpp`
+- Use the [Catch2](https://github.com/catchorg/Catch2) framework
+
+### Running Tests
+
+```bash
+# Run all tests
+cd build && ctest --output-on-failure
+
+# Run specific test
+./build/tests/your_test_name
+```
+
+## 🔄 Pull Request Process
+
+1. Ensure your code passes all tests
+2. Update documentation if needed
+3. Ensure your branch is up-to-date with `main`
+4. Open a pull request with a clear description of changes
+5. Request reviews from maintainers
+6. Address review comments
+7. Wait for CI to pass
+8. Squash merge into `main`
+
+## 🐛 Issue Reporting
+
+When reporting issues, please include:
+
+1. A clear title and description
+2. Steps to reproduce
+3. Expected vs actual behavior
+4. Environment details (OS, compiler version, etc.)
+5. Relevant logs or screenshots
+
+## 📖 Documentation
+
+### Building Documentation
+
+```bash
+# Install dependencies
+pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin
+
+# Serve documentation locally
+mkdocs serve
+```
+
+### API Documentation
+
+We use Doxygen for API documentation. To generate:
+
+```bash
+# Install Doxygen
+sudo apt-get install doxygen graphviz
+
+# Generate documentation
+doxygen docs/Doxyfile
+```
+
+## 💡 Commit Guidelines
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes
+- `refactor`: Code refactoring
+- `test`: Adding or fixing tests
+- `chore`: Maintenance tasks
+
+Example commit message:
+```
+feat(combat): add combo system
+
+Adds a new combo system for melee combat with support for chaining attacks.
+Fixes #123
+```
+
+## 🚀 Release Process
+
+1. Create a release branch from `main`
+2. Update version numbers in relevant files
+3. Update CHANGELOG.md
+4. Create a release tag
+5. Push the tag to trigger the release workflow
+6. Create a GitHub release with release notes
 # Create build directory
 mkdir build && cd build
 
