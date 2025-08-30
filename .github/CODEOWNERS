@@ -1,0 +1,24 @@
+# Default owners for the entire repository
+* @MKWorldWide/aincrad-maintainers
+
+# Core engine components
+/src/ @MKWorldWide/engine-team
+
+# Game content and assets
+/Assets/ @MKWorldWide/content-team
+/Content/ @MKWorldWide/content-team
+
+# Documentation
+/docs/ @MKWorldWide/documentation-team
+
+# CI/CD and infrastructure
+.github/ @MKWorldWide/devops-team
+
+# Tools and scripts
+/tools/ @MKWorldWide/tooling-team
+
+# Serafina Discord bot
+/serafina/ @MKWorldWide/serafina-team
+
+# Tests
+/tests/ @MKWorldWide/qa-team

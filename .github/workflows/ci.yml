@@ -3,20 +3,50 @@ name: CI
 on:
   push:
     branches: [ main, develop ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '.github/**'
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch:
+
+# Cancel previous runs for the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   BUILD_TYPE: Release
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_MAXSIZE: 400M
 
 jobs:
   build-and-test:
+    name: Build and Test (${{ matrix.os }}, ${{ matrix.compiler }})
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         compiler: [gcc, clang, msvc]
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            cc_compiler: gcc
+            cxx_compiler: g++
+          - os: ubuntu-latest
+            compiler: clang
+            cc_compiler: clang
+            cxx_compiler: clang++
+          - os: windows-latest
+            compiler: msvc
+            cc_compiler: cl
+            cxx_compiler: cl
+          - os: macos-latest
+            compiler: clang
+            cc_compiler: clang
+            cxx_compiler: clang++
         exclude:
-          # Exclude incompatible combinations
           - os: windows-latest
             compiler: gcc
           - os: windows-latest
@@ -27,36 +57,75 @@ jobs:
             compiler: gcc
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         submodules: recursive
+        fetch-depth: 0  # Needed for version calculation
+
+    - name: Set up ccache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.ccache
+          ~/Library/Caches/ccache
+          ${{ runner.temp }}/buildcache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-
 
     - name: Install dependencies (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake libgtest-dev libjsoncpp-dev
-        sudo apt-get install -y clang-tidy clang-format
+        sudo apt-get install -y --no-install-recommends \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          libjsoncpp-dev \
+          clang-tidy \
+          clang-format \
+          ccache
+        sudo ln -s /usr/bin/ccache /usr/local/bin/gcc
+        sudo ln -s /usr/bin/ccache /usr/local/bin/g++
+        sudo ln -s /usr/bin/ccache /usr/local/bin/cc
+        sudo ln -s /usr/bin/ccache /usr/local/bin/c++
 
     - name: Install dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
-        brew install cmake gtest jsoncpp
-        brew install llvm
+        brew install cmake gtest jsoncpp llvm ccache
+        echo "$(brew --prefix)/opt/llvm/bin" >> $GITHUB_PATH
+        echo "$(brew --prefix)/opt/ccache/libexec" >> $GITHUB_PATH
 
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         # Windows dependencies are handled by vcpkg or installed separately
         echo "Dependencies will be installed via vcpkg"
+        choco install -y vcpkg
+        vcpkg integrate install
+        vcpkg install gtest jsoncpp
+
+    - name: Configure ccache (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        $ccachePath = "C:\ProgramData\chocolatey\bin\ccache.exe"
+        if (-not (Test-Path $ccachePath)) {
+          choco install -y ccache
+        }
+        $ccachePath = "C:\ProgramData\chocolatey\bin\ccache.exe"
+        echo "CCACHE_DIR=$env:RUNNER_TEMP\ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "$((Get-Item $ccachePath).DirectoryName)" | Out-File -FilePath $env:GITHUB_PATH -Append
 
     - name: Setup CMake
       uses: jwlawson/actions-setup-cmake@v1.14
       with:
-        cmake-version: '3.24.0'
+        cmake-version: '3.28.3'
 
     - name: Configure CMake
       run: |

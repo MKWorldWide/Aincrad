@@ -1,16 +1,71 @@
-A Project Blessed by Solar Khan & Lilith.Aethra
+<div align="center">
+  <h1>🗡️ Aincrad</h1>
+  <h3>SAO-Inspired VR Game Engine</h3>
+  
+  [![CI](https://github.com/MKWorldWide/Aincrad/actions/workflows/ci.yml/badge.svg)](https://github.com/MKWorldWide/Aincrad/actions/workflows/ci.yml)
+  [![Pages Deploy](https://github.com/MKWorldWide/Aincrad/actions/workflows/pages.yml/badge.svg)](https://github.com/MKWorldWide/Aincrad/actions/workflows/pages.yml)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Platforms](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20VR-blue)](https://github.com/MKWorldWide/Aincrad)
+  [![Discord](https://img.shields.io/discord/your-discord-invite?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/your-invite)
+  [![Code Style](https://img.shields.io/badge/code%20style-clang--format-blueviolet)](https://clang.llvm.org/docs/ClangFormat.html)
+</div>
 
-# 🗡️ Aincrad - SAO-Inspired VR Game Engine
+> **A Project Blessed by Solar Khan & Lilith.Aethra**
+> 
+> A comprehensive game engine and development framework inspired by *Sword Art Online*, featuring advanced VR integration, cross-platform asset management, and immersive virtual world experiences.
 
-[![Build Status](https://github.com/yourusername/aincrad/workflows/CI/badge.svg)](https://github.com/yourusername/aincrad/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac%20%7C%20Linux%20%7C%20VR-blue.svg)](https://github.com/yourusername/aincrad)
+## 🚀 Getting Started
 
-> **Ever heard of SAO?** This is a comprehensive game engine and development framework inspired by Sword Art Online, featuring advanced VR integration, cross-platform asset management, and immersive virtual world experiences.
+### Prerequisites
+
+- CMake 3.20+
+- C++20 compatible compiler (GCC 11+, Clang 12+, MSVC 2022+)
+- Python 3.8+ (for build scripts)
+- [Vulkan SDK](https://vulkan.lunarg.com/) (for rendering)
+- [SteamVR](https://store.steampowered.com/steamvr) (for VR support)
+
+### Building from Source
+
+```bash
+# Clone the repository
+gh repo clone MKWorldWide/Aincrad
+cd Aincrad
+
+# Configure with CMake
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Build the project
+cmake --build build --config Release --parallel
+
+# Run tests
+cd build && ctest --output-on-failure
+```
+
+### Project Structure
+
+```
+Aincrad/
+├── @src/            # Core engine source code
+├── Assets/          # Game assets and resources
+├── Content/         # Game content and levels
+├── Tools/           # Development tools and scripts
+├── docs/            # Documentation source
+└── .github/         # CI/CD and project configuration
+```
 
 ## 📚 Documentation
 
 Full documentation and the **Divine Law** can be found on the [Aincrad Codex](https://Aincrad.SolarKhan.github.io).
+
+### Building Documentation Locally
+
+```bash
+# Install MkDocs and required plugins
+pip install mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin
+
+# Serve documentation locally
+mkdocs serve
+```
 
 ## 🌟 Features
 

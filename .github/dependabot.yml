@@ -1,0 +1,70 @@
+version: 2
+updates:
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Enable version updates for pip
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/serafina"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Enable version updates for Cargo (Rust)
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "rust"
+
+  # Enable version updates for submodules
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "submodules"
+
+# Configuration for pull requests
+pull-request-branch-name:
+  separator: "/"
+
+# Set update limits to prevent too many PRs
+open-pull-requests-limit: 10
+
+# Automatically rebase PRs to resolve conflicts
+rebase-strategy: "auto"
+
+# Add reviewers to all dependency PRs
+reviewers:
+  - "MKWorldWide/maintainers"
+
+# Add assignees to all dependency PRs
+assignees:
+  - "MKWorldWide/dependency-team"
+
+# Add commit message prefix for better filtering
+commit-message:
+  prefix: "chore(deps)"
+  prefix-development: "chore(dev-deps)"
+  include: "scope"
